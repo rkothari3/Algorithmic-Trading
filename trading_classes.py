@@ -1,3 +1,8 @@
+import yfinance as yf
+import pandas as pd
+import os
+from requests_html import HTMLSession
+
 class TradingOpportunities:
     
     def __init__(self, num_stocks=25, num_crypto=25):
@@ -15,6 +20,19 @@ class TradingOpportunities:
     
     def raw_get_daily_info(self, site):
         """
-        - Takes a site and turns its HTML to a pandas df
-        - 
+Purpose: Scrapes a given website (like Yahoo Finance) and converts the HTML table into a Pandas DataFrame.
+How It Works:
+Uses HTMLSession from requests_html to fetch the webpage.
+Extracts HTML tables from the page using pd.read_html.
+Returns the first table as a DataFrame.
         """
+
+        session = HTMLSession()
+        response = session.get(site)
+
+        tables = pd.read_html(response.html.raw_html)
+        df = tables[0].copy()
+        df.colums = tables[0].columns
+
+        session.close()
+        return df
